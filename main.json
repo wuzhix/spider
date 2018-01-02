@@ -1,0 +1,4 @@
+{
+  "max_workers" : 10,
+  "spider_conf" : "./conf"
+}
