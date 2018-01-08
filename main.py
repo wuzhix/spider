@@ -48,7 +48,6 @@ key `keyword` (`skw_sk_id`, `skw_add_time`)
 
 # !/usr/bin/python3
 # -*- coding: UTF-8 -*-
-import difflib
 import json
 from concurrent.futures import ThreadPoolExecutor, wait
 import requests
