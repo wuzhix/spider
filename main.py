@@ -26,8 +26,8 @@ create table `spider_web`
 (
     `sw_id` int(10) unsigned not null auto_increment comment '自增id',
     `sw_sr_id` int(10) unsigned not null default '0' comment '站点id',
-    `sw_url` varchar(256) not null default '' comment '网站url',
     `sw_title` varchar(256) not null default '' comment '网站标题',
+    `sw_url` varchar(256) not null default '' comment '网站url',
     `sw_add_time` timestamp not null default current_timestamp comment '添加时间',
 primary key (`sw_id`),
 key `sw_sr_id` (`sw_sr_id`),
@@ -194,7 +194,7 @@ def spider(web_config):
         if web is None:
             continue
         find = "sw_url='%s'" % url
-        insert = {'key': 'sw_sr_id,sw_url,sw_title', 'value': "%d,'%s','%s'" % (root_id, url, title)}
+        insert = {'key': 'sw_sr_id,sw_title,sw_url', 'value': "%d,'%s','%s'" % (root_id, title, url)}
         web_id = save_data('spider_web', find, insert)
         if web_id is None:
             continue
