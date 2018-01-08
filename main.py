@@ -5,7 +5,7 @@
 create table `spider_keyword`
 (
     `sk_id` int(10) unsigned not null auto_increment comment '自增id',
-    `sk_name` varchar(20) not null default '' comment '关键字名称',
+    `sk_name` varchar(10) not null default '' comment '关键字名称',
     `sk_add_time` timestamp not null default current_timestamp comment '添加时间',
 primary key (`sk_id`),
 key `sk_name` (`sk_name`)
@@ -27,6 +27,7 @@ create table `spider_web`
     `sw_id` int(10) unsigned not null auto_increment comment '自增id',
     `sw_sr_id` int(10) unsigned not null default '0' comment '站点id',
     `sw_url` varchar(256) not null default '' comment '网站url',
+    `sw_title` varchar(256) not null default '' comment '网站标题',
     `sw_add_time` timestamp not null default current_timestamp comment '添加时间',
 primary key (`sw_id`),
 key `sw_sr_id` (`sw_sr_id`),
@@ -41,12 +42,13 @@ create table `spider_keyword_web`
     `skw_sw_id` int(10) unsigned not null default '0' comment '网站id',
     `skw_add_time` timestamp not null default current_timestamp comment '添加时间',
 primary key (`skw_id`),
-key `keyword` (`skw_sk_id`, `skw_sw_id`)
+key `keyword` (`skw_sk_id`, `skw_add_time`)
 )engine=innodb default charset=utf8 comment '关键字映射网站表';
 '''
 
 # !/usr/bin/python3
 # -*- coding: UTF-8 -*-
+import difflib
 import json
 from concurrent.futures import ThreadPoolExecutor, wait
 import requests
@@ -187,18 +189,21 @@ def spider(web_config):
     for dom in doms:
         url = get_dom_attr(dom, web_config['web']['attr'])
         title = dom.text
+        if title is None:
+            continue
         web = get_url_dom(url)
         if web is None:
             continue
         find = "sw_url='%s'" % url
-        insert = {'key': 'sw_sr_id,sw_url', 'value': "%d,'%s'" % (root_id, url)}
+        insert = {'key': 'sw_sr_id,sw_url,sw_title', 'value': "%d,'%s','%s'" % (root_id, url, title)}
         web_id = save_data('spider_web', find, insert)
         if web_id is None:
             continue
+        print(title, url)
         if 'keyword' in web_config['web'].keys():
             keyword_list = get_dom_keyword(web, web_config['web']['keyword'])
             for keyword in keyword_list:
-                if keyword != title:
+                if title.find(keyword) == -1 and keyword != '' and len(keyword) < 10:
                     find = "sk_name='%s'" % keyword
                     insert = {'key': 'sk_name', 'value': "'%s'" % keyword}
                     keyword_id = save_data('spider_keyword', find, insert)
