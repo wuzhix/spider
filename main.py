@@ -127,6 +127,8 @@ def get_dom_keyword(dom, keyword_conf):
         keywords = label[0].text
     if 'split' in keyword_conf:
         keyword_list = keywords.split(keyword_conf['split'])
+        if 'shield' in keyword_conf:
+            keyword_list = [i for i in keyword_list if i not in keyword_conf['shield']]
     else:
         keyword_list = [keywords]
     return keyword_list

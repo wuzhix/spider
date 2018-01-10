@@ -31,6 +31,8 @@ spider_info = {
                 'label': "//meta[@name='keywords']",
                 # 关键字从标签的content属性获取
                 'attr': 'content',
+                # 屏蔽关键字
+                'shield': ['腾讯', '腾讯网', '腾讯新闻'],
                 # 关键字分割符
                 'split': ','
             }
